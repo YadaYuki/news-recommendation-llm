@@ -5,7 +5,6 @@ import polars as pl
 import numpy as np
 import random
 from utils.logger import logging
-from utils.random_seed import set_random_seed
 
 EMPTY_NEWS_ID, EMPTY_IMPRESSION_IDX = "EMPTY_NEWS_ID", -1
 
@@ -170,33 +169,3 @@ class MINDValDataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.behavior_df)
-
-
-if __name__ == "__main__":
-    from utils.mind.dataframe import read_behavior_df, read_news_df
-    from const.path import MIND_SMALL_VAL_DATASET_DIR
-    from transformers import AutoTokenizer
-    from torch.utils.data import DataLoader
-
-    set_random_seed(42)
-
-    tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
-
-    # logging.info()
-    def transform(texts: list[str]) -> torch.Tensor:
-        return tokenizer(texts, return_tensors="pt", max_length=64, padding="max_length", truncation=True)["input_ids"]
-
-    logging.info("Load Data")
-    behavior_df, news_df = read_behavior_df(MIND_SMALL_VAL_DATASET_DIR / "behaviors.tsv"), read_news_df(
-        MIND_SMALL_VAL_DATASET_DIR / "news.tsv"
-    )
-
-    logging.info("Init MINDValDataset")
-    train_dataset = MINDValDataset(behavior_df, news_df, batch_transform_texts=transform, history_size=20)
-    train_dataloader = DataLoader(train_dataset, batch_size=1, shuffle=True)
-    logging.info("Start Iteration")
-    for batch in train_dataloader:
-        history_news, candidate_news, labels = batch
-        logging.info(
-            f"history_news.shape: {history_news.shape}, candidate_news.shape: {candidate_news.shape}, labels.shape: {labels.shape}"
-        )
