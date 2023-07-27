@@ -1,3 +1,3 @@
-# Rye Starter
+# News Recommendation
 
 Describe your project here.
