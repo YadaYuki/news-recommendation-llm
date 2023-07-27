@@ -1,0 +1,17 @@
+# python generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# venv
+.venv
+
+dataset/*
+!dataset/download_mind.py
+
+.DS_Store
+
+.cache
