@@ -38,5 +38,12 @@ class NRMS(nn.Module):
         news_histories_encoded = self.user_encoder(
             news_histories, self.news_encoder
         )  # [batch_size, histories, seq_len] -> [batch_size, emb_dim]
+        news_histories_encoded = news_histories_encoded.unsqueeze(
+            -1
+        )  # [batch_size, emb_dim] -> [batch_size, emb_dim, 1]
 
-        return torch.bmm(news_candidate_encoded, news_histories_encoded.unsqueeze(-1)).squeeze(-1).squeeze(-1)
+        output = torch.bmm(
+            news_candidate_encoded, news_histories_encoded
+        )  # [batch_size, (1 + npratio), emb_dim] x [batch_size, emb_dim, 1] -> [batch_size, (1+npratio), 1, 1]
+
+        return output.squeeze(-1).squeeze(-1)
