@@ -5,12 +5,15 @@ from mind.dataframe import read_behavior_df, read_news_df
 from mind.MINDDataset import MINDTrainDataset, MINDValDataset
 from const.path import MIND_SMALL_TRAIN_DATASET_DIR, MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR
 from utils.random_seed import set_random_seed
+from utils.text import create_transform_fn_from_pretrained_tokenizer
 
 set_random_seed()
 
 
 def train(
     pretrained: str = "bert-base-uncased",
+    npratio: int = 4,
+    history_size: int = 20,
     batch_size: int = 64,
     epochs: int = 5,
     learning_rate: float = 5e-5,
@@ -20,8 +23,9 @@ def train(
     """
     0. Definite Parameters & Functions
     """
-    hidden_size: int = AutoConfig.from_pretrained("bert-base-uncased").hidden_size
+    hidden_size: int = AutoConfig.from_pretrained(pretrained).hidden_size
     loss_fn: nn.Module = nn.CrossEntropyLoss()
+    transform_fn = create_transform_fn_from_pretrained_tokenizer(pretrained, max_len)
 
     """
     1. Init Model
@@ -37,8 +41,8 @@ def train(
     train_behavior_df = read_behavior_df(MIND_SMALL_TRAIN_DATASET_DIR / "behavior.tsv")
     val_news_df = read_news_df(MIND_SMALL_VAL_DATASET_DIR / "news.tsv")
     val_behavior_df = read_behavior_df(MIND_SMALL_VAL_DATASET_DIR / "behavior.tsv")
-    train_dataset = MINDTrainDataset(train_news_df, train_behavior_df)
-    eval_dataset = MINDValDataset(val_news_df, val_behavior_df)
+    train_dataset = MINDTrainDataset(train_news_df, train_behavior_df, transform_fn, history_size)
+    eval_dataset = MINDValDataset(val_news_df, val_behavior_df, transform_fn, history_size)
 
     """
     3. Train
