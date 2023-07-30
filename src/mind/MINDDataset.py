@@ -1,6 +1,6 @@
 from torch.utils.data import Dataset
 import torch
-from typing import Tuple, Callable
+from typing import Callable
 import polars as pl
 import numpy as np
 import random
@@ -129,9 +129,7 @@ class MINDValDataset(Dataset):
         }
         self.__news_id_to_title_map[EMPTY_NEWS_ID] = ""
 
-    def __getitem__(
-        self, behavior_idx: int
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:  # TODO: 一行あたりにpositiveが複数存在することも考慮した
+    def __getitem__(self, behavior_idx: int) -> dict:  # TODO: 一行あたりにpositiveが複数存在することも考慮した
         """
         Returns:
             torch.Tensor: history_news
