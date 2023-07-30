@@ -17,7 +17,7 @@ class NRMS(nn.Module):
         self.hidden_size: int = hidden_size
         self.loss_fn = loss_fn
 
-        self.__mode: str = None
+        self.__mode: str | None = None
 
     def forward(
         self, candidate_news: torch.Tensor, news_histories: torch.Tensor, target: torch.Tensor
