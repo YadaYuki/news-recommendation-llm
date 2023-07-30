@@ -64,7 +64,7 @@ class NRMS(nn.Module):
         # candidate_news = ["N24510","N39237","N9721"]
         # target = [0,2]( = [1, 0, 1] in one-hot format)
         if self.__mode == "val":
-            return ModelOutput(logits=output, loss=None)
+            return ModelOutput(logits=output, loss=-1)
 
         loss = self.loss_fn(output, target)
         return ModelOutput(logits=output, loss=loss)

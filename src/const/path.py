@@ -3,6 +3,9 @@ import pathlib
 
 PROJECT_ROOT = (pathlib.Path(__file__) / ".." / ".." / "..").resolve()
 
+OUTPUT_DIR = PROJECT_ROOT / "output"
+MODEL_OUTPUT_DIR = OUTPUT_DIR / "model"
+
 DATASET_DIR = PROJECT_ROOT / "dataset"
 
 MIND_DATASET_DIR = DATASET_DIR / "mind"

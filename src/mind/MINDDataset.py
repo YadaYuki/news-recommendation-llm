@@ -4,7 +4,6 @@ from typing import Tuple, Callable
 import polars as pl
 import numpy as np
 import random
-from utils.logger import logging
 
 EMPTY_NEWS_ID, EMPTY_IMPRESSION_IDX = "EMPTY_NEWS_ID", -1
 
@@ -40,9 +39,7 @@ class MINDTrainDataset(Dataset):
         }
         self.__news_id_to_title_map[EMPTY_NEWS_ID] = ""
 
-    def __getitem__(
-        self, behavior_idx: int
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:  # TODO: 一行あたりにpositiveが複数存在することも考慮した
+    def __getitem__(self, behavior_idx: int) -> dict:  # TODO: 一行あたりにpositiveが複数存在することも考慮した
         """
         Returns:
             torch.Tensor: history_news
@@ -97,7 +94,12 @@ class MINDTrainDataset(Dataset):
         ), self.batch_transform_texts(history_news_titles)
         labels_tensor = torch.Tensor(labels)
 
-        return history_news_tensor, candidate_news_tensor, labels_tensor
+        # ref: NRMS.forward in src/recommendation/nrms/NRMS.py
+        return {
+            "news_histories": history_news_tensor,
+            "candidate_news": candidate_news_tensor,
+            "target": labels_tensor,
+        }
 
     def __len__(self) -> int:
         return len(self.behavior_df)
@@ -164,8 +166,12 @@ class MINDValDataset(Dataset):
             candidate_news_titles
         ), self.batch_transform_texts(history_news_titles)
         labels_tensor = torch.Tensor(labels)
-        logging.info(f"labels_tensor.shape: {labels_tensor.size()}")
-        return history_news_tensor, candidate_news_tensor, labels_tensor
+
+        return {
+            "news_histories": history_news_tensor,
+            "candidate_news": candidate_news_tensor,
+            "target": labels_tensor,
+        }
 
     def __len__(self) -> int:
         return len(self.behavior_df)
