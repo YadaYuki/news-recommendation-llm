@@ -10,8 +10,9 @@ wheels/
 .venv
 
 dataset/*
-!dataset/download_mind.py
 
 .DS_Store
 
 .cache
+
+*_cache

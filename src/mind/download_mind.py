@@ -1,4 +1,4 @@
-from src.const.path import DATASET_DIR
+from const.path import DATASET_DIR
 import requests
 from tqdm import tqdm
 from pydantic import BaseModel
@@ -22,6 +22,8 @@ def download_mind(zip_filename: str) -> None:
     KB = 1024
     data_size = int(res.headers.get("content-length", 0))
     progress_bar = tqdm(total=data_size, unit="iB", unit_scale=True, desc=f"[{zip_filename}]")
+
+    MIND_ZIP_DIR.mkdir(parents=True, exist_ok=True)
 
     with open(MIND_ZIP_DIR / zip_filename, "wb") as file:
         for chunk in res.iter_content(KB):

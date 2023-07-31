@@ -92,7 +92,7 @@ class MINDTrainDataset(Dataset):
         candidate_news_tensor, history_news_tensor = self.batch_transform_texts(
             candidate_news_titles
         ), self.batch_transform_texts(history_news_titles)
-        labels_tensor = torch.Tensor(labels)
+        labels_tensor = torch.Tensor(labels).argmax()
 
         # ref: NRMS.forward in src/recommendation/nrms/NRMS.py
         return {
@@ -134,7 +134,7 @@ class MINDValDataset(Dataset):
         Returns:
             torch.Tensor: history_news
             torch.Tensor: candidate_news
-            torch.Tensor: labels
+            torch.Tensor: one-hot labels
         """
         # Extract Values
         behavior_item = self.behavior_df[behavior_idx]
@@ -163,13 +163,43 @@ class MINDValDataset(Dataset):
         candidate_news_tensor, history_news_tensor = self.batch_transform_texts(
             candidate_news_titles
         ), self.batch_transform_texts(history_news_titles)
-        labels_tensor = torch.Tensor(labels)
+        one_hot_label_tensor = torch.Tensor(labels)
 
         return {
             "news_histories": history_news_tensor,
             "candidate_news": candidate_news_tensor,
-            "target": labels_tensor,
+            "target": one_hot_label_tensor,  #
         }
 
     def __len__(self) -> int:
         return len(self.behavior_df)
+
+
+if __name__ == "__main__":
+    from src.mind.dataframe import read_behavior_df, read_news_df
+    from const.path import MIND_SMALL_TRAIN_DATASET_DIR
+    from transformers import AutoTokenizer
+    from torch.utils.data import DataLoader
+    from utils.logger import logging
+    from utils.random_seed import set_random_seed
+
+    set_random_seed(42)
+
+    tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+
+    # logging.info()
+    def transform(texts: list[str]) -> torch.Tensor:
+        return tokenizer(texts, return_tensors="pt", max_length=64, padding="max_length", truncation=True)["input_ids"]
+
+    logging.info("Load Data")
+    behavior_df, news_df = read_behavior_df(MIND_SMALL_TRAIN_DATASET_DIR / "behaviors.tsv"), read_news_df(
+        MIND_SMALL_TRAIN_DATASET_DIR / "news.tsv"
+    )
+
+    logging.info("Init MINDTrainDataset")
+    train_dataset = MINDTrainDataset(behavior_df, news_df, batch_transform_texts=transform, npratio=4, history_size=20)
+    train_dataloader = DataLoader(train_dataset, batch_size=5, shuffle=True)
+    logging.info("Start Iteration")
+    for batch in train_dataloader:
+        logging.info(f"{batch}")
+        break
