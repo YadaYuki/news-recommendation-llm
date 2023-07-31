@@ -38,9 +38,9 @@ def train(
     2. Load Data & Create Dataset
     """
     train_news_df = read_news_df(MIND_SMALL_TRAIN_DATASET_DIR / "news.tsv")
-    train_behavior_df = read_behavior_df(MIND_SMALL_TRAIN_DATASET_DIR / "behavior.tsv")
+    train_behavior_df = read_behavior_df(MIND_SMALL_TRAIN_DATASET_DIR / "behaviors.tsv")
     val_news_df = read_news_df(MIND_SMALL_VAL_DATASET_DIR / "news.tsv")
-    val_behavior_df = read_behavior_df(MIND_SMALL_VAL_DATASET_DIR / "behavior.tsv")
+    val_behavior_df = read_behavior_df(MIND_SMALL_VAL_DATASET_DIR / "behaviors.tsv")
     train_dataset = MINDTrainDataset(train_news_df, train_behavior_df, transform_fn, history_size)
     eval_dataset = MINDValDataset(val_news_df, val_behavior_df, transform_fn, history_size)
 
