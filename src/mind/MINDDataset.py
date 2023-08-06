@@ -98,9 +98,9 @@ class MINDTrainDataset(Dataset):
 
         # ref: NRMS.forward in src/recommendation/nrms/NRMS.py
         return {
-            "news_histories": history_news_tensor.to(self.device),
-            "candidate_news": candidate_news_tensor.to(self.device),
-            "target": labels_tensor.to(self.device),
+            "news_histories": history_news_tensor,
+            "candidate_news": candidate_news_tensor,
+            "target": labels_tensor,
         }
 
     def __len__(self) -> int:
@@ -170,9 +170,9 @@ class MINDValDataset(Dataset):
         one_hot_label_tensor = torch.Tensor(labels)
 
         return {
-            "news_histories": history_news_tensor.to(self.device),
-            "candidate_news": candidate_news_tensor.to(self.device),
-            "target": one_hot_label_tensor.to(self.device),  #
+            "news_histories": history_news_tensor,
+            "candidate_news": candidate_news_tensor,
+            "target": one_hot_label_tensor,  #
         }
 
     def __len__(self) -> int:
