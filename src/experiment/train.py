@@ -3,7 +3,7 @@ from recommendation.nrms import PLMBasedNewsEncoder, NRMS, UserEncoder
 from torch import nn
 from mind.dataframe import read_behavior_df, read_news_df
 from mind.MINDDataset import MINDTrainDataset, MINDValDataset
-from const.path import MIND_SMALL_TRAIN_DATASET_DIR, MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR
+from const.path import MIND_SMALL_TRAIN_DATASET_DIR, MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR, LOG_OUTPUT_DIR
 from utils.random_seed import set_random_seed
 from utils.text import create_transform_fn_from_pretrained_tokenizer
 import torch
@@ -27,15 +27,15 @@ def compute_rec_metrics(pred: EvalPrediction) -> dict[str, float]:
 
 
 def train(
-    pretrained: str = "bert-base-uncased",
+    pretrained: str = "distilbert-base-uncased",
     npratio: int = 4,
-    history_size: int = 5,
-    batch_size: int = 8,
-    epochs: int = 5,
+    history_size: int = 20,
+    batch_size: int = 32,
+    epochs: int = 1,
     learning_rate: float = 1e-5,
     weight_decay: float = 0.0,
     max_len: int = 16,
-    device: torch.device = torch.device("cuda:2" if torch.cuda.is_available() else "cpu"),
+    device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
 ) -> None:
     logging.info("Start")
     """
@@ -80,17 +80,18 @@ def train(
         # metric_for_best_model="f1",
         # load_best_model_at_end=True,
         # evaluation_strategy="no",
-        # save_strategy="epoch",
+        save_strategy="epoch",
         learning_rate=learning_rate,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=EVAL_BATCH_SIZE,
         num_train_epochs=epochs,
         remove_unused_columns=False,
+        # dataloader_num_workers=os.cpu_count(),
+        logging_dir=LOG_OUTPUT_DIR,
+        logging_steps=5,
         report_to="none",
     )
-    logging.info(training_args.device)
 
-    nrms_net.set_mode("train")
     trainer = Trainer(
         model=nrms_net,
         compute_metrics=compute_rec_metrics,
@@ -99,10 +100,14 @@ def train(
         eval_dataset=eval_dataset,
         # callbacks=[EarlyStoppingCallback(early_stopping_patience=3)], # TODO:
     )
+    trainer.model.set_mode("train")
 
     trainer.train()
 
-    trainer.evaluate(eval_dataset)
+    trainer.model.set_mode("val")
+    output = trainer.evaluate(eval_dataset)
+
+    logging.info(output)
 
 
 if __name__ == "__main__":

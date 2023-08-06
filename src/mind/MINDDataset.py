@@ -101,7 +101,6 @@ class MINDTrainDataset(Dataset):
             "news_histories": history_news_tensor,
             "candidate_news": candidate_news_tensor,
             "target": labels_tensor,
-            "mode": "train",
         }
 
     def __len__(self) -> int:
@@ -173,8 +172,7 @@ class MINDValDataset(Dataset):
         return {
             "news_histories": history_news_tensor,
             "candidate_news": candidate_news_tensor,
-            "target": one_hot_label_tensor,  #
-            "mode": "val",
+            "target": one_hot_label_tensor,
         }
 
     def __len__(self) -> int:
@@ -183,7 +181,7 @@ class MINDValDataset(Dataset):
 
 if __name__ == "__main__":
     from src.mind.dataframe import read_behavior_df, read_news_df
-    from const.path import MIND_SMALL_TRAIN_DATASET_DIR
+    from const.path import MIND_SMALL_VAL_DATASET_DIR
     from transformers import AutoTokenizer
     from torch.utils.data import DataLoader
     from utils.logger import logging
@@ -198,8 +196,8 @@ if __name__ == "__main__":
         return tokenizer(texts, return_tensors="pt", max_length=64, padding="max_length", truncation=True)["input_ids"]
 
     logging.info("Load Data")
-    behavior_df, news_df = read_behavior_df(MIND_SMALL_TRAIN_DATASET_DIR / "behaviors.tsv"), read_news_df(
-        MIND_SMALL_TRAIN_DATASET_DIR / "news.tsv"
+    behavior_df, news_df = read_behavior_df(MIND_SMALL_VAL_DATASET_DIR / "behaviors.tsv"), read_news_df(
+        MIND_SMALL_VAL_DATASET_DIR / "news.tsv"
     )
 
     logging.info("Init MINDTrainDataset")
