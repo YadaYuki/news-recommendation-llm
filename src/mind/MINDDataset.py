@@ -101,6 +101,7 @@ class MINDTrainDataset(Dataset):
             "news_histories": history_news_tensor,
             "candidate_news": candidate_news_tensor,
             "target": labels_tensor,
+            "mode": "train",
         }
 
     def __len__(self) -> int:
@@ -173,6 +174,7 @@ class MINDValDataset(Dataset):
             "news_histories": history_news_tensor,
             "candidate_news": candidate_news_tensor,
             "target": one_hot_label_tensor,  #
+            "mode": "val",
         }
 
     def __len__(self) -> int:

@@ -17,10 +17,8 @@ class NRMS(nn.Module):
         self.hidden_size: int = hidden_size
         self.loss_fn = loss_fn
 
-        self.__mode: str | None = None
-
     def forward(
-        self, candidate_news: torch.Tensor, news_histories: torch.Tensor, target: torch.Tensor
+        self, candidate_news: torch.Tensor, news_histories: torch.Tensor, target: torch.Tensor, mode: str
     ) -> torch.Tensor:
         """
         Parameters
@@ -34,7 +32,7 @@ class NRMS(nn.Module):
         output: torch.Tensor (shape = (batch_size, candidate_num))
 
         """
-        assert self.__mode in ["val", "train"]
+        mode in ["val", "train"]
 
         batch_size, candidate_num, seq_len = candidate_news.size()
         candidate_news = candidate_news.view(batch_size * candidate_num, seq_len)
@@ -63,12 +61,8 @@ class NRMS(nn.Module):
         # e.g.
         # candidate_news = ["N24510","N39237","N9721"]
         # target = [0,2]( = [1, 0, 1] in one-hot format)
-        if self.__mode == "val":
+        if mode == "val":
             return ModelOutput(logits=output, loss=-1)
 
         loss = self.loss_fn(output, target)
         return ModelOutput(logits=output, loss=loss)
-
-    def set_mode(self, mode: str) -> None:
-        assert mode in ["val", "train"]
-        self.__mode = mode
