@@ -21,10 +21,16 @@ class RecEvaluator:
             **{
                 "ndcg_at_10": cls.ndcg_score(y_true, y_score, 10),
                 "ndcg_at_5": cls.ndcg_score(y_true, y_score, 5),
-                "auc": roc_auc_score(y_true, y_score),
+                "auc": cls.roc_auc_score(y_true, y_score),
                 "mrr": cls.mrr_score(y_true, y_score),
             }
         )
+
+    @classmethod
+    def roc_auc_score(cls, y_true: np.ndarray, y_score: np.ndarray) -> float:
+        y_score_rank = np.argsort(y_score)[::-1] + 1
+        y_score = np.ones(len(y_score)) / y_score_rank
+        return roc_auc_score(y_true, y_score)
 
     @classmethod
     def dcg_score(cls, y_true: np.ndarray, y_score: np.ndarray, K: int = 5) -> float:
@@ -34,7 +40,7 @@ class RecEvaluator:
         # ref(MIND Official): https://github.com/msnews/MIND/blob/master/evaluate.py#L7-L12
         # ref(sklearn): https://github.com/scikit-learn/scikit-learn/blob/7f9bad99d6e0a3e8ddf92a7e5561245224dab102/sklearn/metrics/_ranking.py#L1444-L1458
 
-        discounts = np.log2(np.arange(len(y_true)) + 2)
+        discounts = np.log2(np.arange(len(y_true)) + 2)[:K]
 
         y_score_rank = np.argsort(y_score)[::-1]
         top_kth_y_true = np.take(y_true, y_score_rank)[:K]
