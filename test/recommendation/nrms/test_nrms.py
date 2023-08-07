@@ -23,5 +23,13 @@ def test_nrms() -> None:
 
     candidate_news_batch = torch.arange(batch_size * candidate_num * seq_len).view(batch_size, candidate_num, seq_len)
     news_histories_batch = torch.arange(batch_size * hist_size * seq_len).view(batch_size, hist_size, seq_len)
+    target = torch.randint(candidate_num, (batch_size,))
 
-    assert tuple(plm_based_nrms(candidate_news_batch, news_histories_batch).size()) == (batch_size, candidate_num)
+    plm_based_nrms.set_mode("train")
+    model_output = plm_based_nrms(candidate_news_batch, news_histories_batch, target)
+    assert tuple(model_output.logits.size()) == (batch_size, candidate_num)
+
+    plm_based_nrms.set_mode("val")
+    model_output = plm_based_nrms(candidate_news_batch, news_histories_batch, target)
+    assert tuple(model_output.logits.size()) == (batch_size, candidate_num)
+    assert float(model_output.loss) == -1.0

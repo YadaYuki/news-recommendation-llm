@@ -17,8 +17,6 @@ class NRMS(nn.Module):
         self.hidden_size: int = hidden_size
         self.loss_fn = loss_fn
 
-        self.__mode: str | None = None
-
     def forward(
         self, candidate_news: torch.Tensor, news_histories: torch.Tensor, target: torch.Tensor
     ) -> torch.Tensor:
@@ -34,7 +32,6 @@ class NRMS(nn.Module):
         output: torch.Tensor (shape = (batch_size, candidate_num))
 
         """
-        assert self.__mode in ["val", "train"]
 
         batch_size, candidate_num, seq_len = candidate_news.size()
         candidate_news = candidate_news.view(batch_size * candidate_num, seq_len)
@@ -58,17 +55,13 @@ class NRMS(nn.Module):
         output = output.squeeze(-1).squeeze(-1)  # [batch_size, (1+npratio), 1, 1] -> [batch_size, (1+npratio)]
 
         # NOTE:
-        # when "val" mode → not calculate loss score
+        # when "val" mode(self.training == False) → not calculate loss score
         # Multiple hot labels may exist on target.
         # e.g.
         # candidate_news = ["N24510","N39237","N9721"]
         # target = [0,2]( = [1, 0, 1] in one-hot format)
-        if self.__mode == "val":
-            return ModelOutput(logits=output, loss=-1)
+        if not self.training:
+            return ModelOutput(logits=output, loss=torch.Tensor([-1]), labels=target)
 
         loss = self.loss_fn(output, target)
-        return ModelOutput(logits=output, loss=loss)
-
-    def set_mode(self, mode: str) -> None:
-        assert mode in ["val", "train"]
-        self.__mode = mode
+        return ModelOutput(logits=output, loss=loss, labels=target)
