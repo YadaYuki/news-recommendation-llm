@@ -4,6 +4,7 @@ from hydra.core.config_store import ConfigStore
 
 @dataclass
 class TrainConfig:
+    random_seed: int = 42
     pretrained: str = "distilbert-base-uncased"
     npratio: int = 4
     history_size: int = 30
