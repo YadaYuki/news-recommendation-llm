@@ -20,12 +20,12 @@ set_random_seed()
 def train(
     pretrained: str = "distilbert-base-uncased",
     npratio: int = 4,
-    history_size: int = 20,
+    history_size: int = 30,
     batch_size: int = 32,
-    epochs: int = 1,
-    learning_rate: float = 1e-5,
+    epochs: int = 3,
+    learning_rate: float = 1e-4,
     weight_decay: float = 0.0,
-    max_len: int = 16,
+    max_len: int = 30,
     device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
 ) -> None:
     logging.info("Start")
