@@ -59,7 +59,7 @@ class NRMS(nn.Module):
         # Multiple hot labels may exist on target.
         # e.g.
         # candidate_news = ["N24510","N39237","N9721"]
-        # target = [0,2]( = [1, 0, 1] in one-hot format)
+        # target = [0,2](=[1, 0, 1] in one-hot format)
         if not self.training:
             return ModelOutput(logits=output, loss=torch.Tensor([-1]), labels=target)
 
