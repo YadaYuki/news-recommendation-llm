@@ -12,20 +12,20 @@ from evaluation.RecEvaluator import RecEvaluator, RecMetrics
 from torch.utils.data import DataLoader
 from transformers.modeling_outputs import ModelOutput
 from tqdm import tqdm
+import hydra
 from utils.slack import notify_slack
-
-set_random_seed()
+from config.config import TrainConfig
 
 
 def train(
-    pretrained: str = "distilbert-base-uncased",
-    npratio: int = 4,
-    history_size: int = 30,
-    batch_size: int = 32,
-    epochs: int = 3,
-    learning_rate: float = 1e-4,
-    weight_decay: float = 0.0,
-    max_len: int = 30,
+    pretrained: str,
+    npratio: int,
+    history_size: int,
+    batch_size: int,
+    epochs: int,
+    learning_rate: float,
+    weight_decay: float,
+    max_len: int,
     device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
 ) -> None:
     logging.info("Start")
@@ -68,7 +68,7 @@ def train(
         save_total_limit=5,
         lr_scheduler_type="constant",
         weight_decay=weight_decay,
-        evaluation_strategy="epoch",
+        evaluation_strategy="no",
         save_strategy="epoch",
         learning_rate=learning_rate,
         per_device_train_batch_size=batch_size,
@@ -133,13 +133,23 @@ def train(
     )
 
 
+@hydra.main(version_base=None, config_name="train_config")
+def main(cfg: TrainConfig) -> None:
+    set_random_seed(cfg.random_seed)
+    train(
+        cfg.pretrained,
+        cfg.npratio,
+        cfg.history_size,
+        cfg.batch_size,
+        cfg.epochs,
+        cfg.learning_rate,
+        cfg.weight_decay,
+        cfg.max_len,
+    )
+
+
 if __name__ == "__main__":
     try:
-        train()
+        main()
     except Exception as e:
-        notify_slack(
-            f"""```
-                {e}
-            ```
-            """
-        )
+        notify_slack(f"```{e}```")
