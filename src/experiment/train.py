@@ -22,6 +22,7 @@ def train(
     npratio: int,
     history_size: int,
     batch_size: int,
+    gradient_accumulation_steps: int,
     epochs: int,
     learning_rate: float,
     weight_decay: float,
@@ -68,15 +69,17 @@ def train(
         save_total_limit=5,
         lr_scheduler_type="constant",
         weight_decay=weight_decay,
+        optim="adamw_torch",
         evaluation_strategy="no",
         save_strategy="epoch",
+        gradient_accumulation_steps=gradient_accumulation_steps,
         learning_rate=learning_rate,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=EVAL_BATCH_SIZE,
         num_train_epochs=epochs,
         remove_unused_columns=False,
         logging_dir=LOG_OUTPUT_DIR,
-        logging_steps=5,
+        logging_steps=1,
         report_to="none",
     )
 
@@ -127,29 +130,41 @@ def train(
 
     notify_slack(
         f"""```
-    {metrics_average.dict()}
+        pretrained:{pretrained}
+        npratio:{npratio}
+        history_size:{history_size}
+        batch_size:{batch_size}
+        gradient_accumulation_steps:{gradient_accumulation_steps}
+        epochs:{epochs}
+        learning_rate:{learning_rate}
+        weight_decay:{weight_decay}
+        max_len:{max_len}
+        device:{device}
+        {metrics_average.dict()}
     ```
+
     """
     )
 
 
 @hydra.main(version_base=None, config_name="train_config")
 def main(cfg: TrainConfig) -> None:
-    set_random_seed(cfg.random_seed)
-    train(
-        cfg.pretrained,
-        cfg.npratio,
-        cfg.history_size,
-        cfg.batch_size,
-        cfg.epochs,
-        cfg.learning_rate,
-        cfg.weight_decay,
-        cfg.max_len,
-    )
+    try:
+        set_random_seed(cfg.random_seed)
+        train(
+            cfg.pretrained,
+            cfg.npratio,
+            cfg.history_size,
+            cfg.batch_size,
+            cfg.gradient_accumulation_steps,
+            cfg.epochs,
+            cfg.learning_rate,
+            cfg.weight_decay,
+            cfg.max_len,
+        )
+    except Exception as e:
+        notify_slack(f"```{e}```")
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        notify_slack(f"```{e}```")
+    main()
