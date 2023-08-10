@@ -1,5 +1,6 @@
 import torch
 from transformers import AutoConfig
+
 from src.recommendation.nrms.NRMS import NRMS
 from src.recommendation.nrms.PLMBasedNewsEncoder import PLMBasedNewsEncoder
 from src.recommendation.nrms.UserEncoder import UserEncoder

@@ -1,21 +1,21 @@
-from transformers import TrainingArguments, AutoConfig, Trainer, AutoTokenizer
-from recommendation.nrms import PLMBasedNewsEncoder, NRMS, UserEncoder
-from torch import nn
+import hydra
+import torch
+from config.config import TrainConfig
+from const.path import LOG_OUTPUT_DIR, MIND_SMALL_TRAIN_DATASET_DIR, MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR
+from evaluation.RecEvaluator import RecEvaluator, RecMetrics
 from mind.dataframe import read_behavior_df, read_news_df
 from mind.MINDDataset import MINDTrainDataset, MINDValDataset
-from const.path import MIND_SMALL_TRAIN_DATASET_DIR, MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR, LOG_OUTPUT_DIR
-from utils.random_seed import set_random_seed
-from utils.text import create_transform_fn_from_pretrained_tokenizer
-import torch
-from utils.logger import logging
-from evaluation.RecEvaluator import RecEvaluator, RecMetrics
+from recommendation.nrms import NRMS, PLMBasedNewsEncoder, UserEncoder
+from torch import nn
 from torch.utils.data import DataLoader
-from transformers.modeling_outputs import ModelOutput
 from tqdm import tqdm
-import hydra
-from utils.slack import notify_slack
-from config.config import TrainConfig
+from transformers import AutoConfig, AutoTokenizer, Trainer, TrainingArguments
+from transformers.modeling_outputs import ModelOutput
+from utils.logger import logging
 from utils.path import generate_folder_name_with_timestamp
+from utils.random_seed import set_random_seed
+from utils.slack import notify_slack
+from utils.text import create_transform_fn_from_pretrained_tokenizer
 
 
 def train(
@@ -146,9 +146,7 @@ def train(
         max_len:{max_len}
         device:{device}
         {metrics_average.dict()}
-    ```
-
-    """
+    ```"""
     )
 
 

@@ -1,18 +1,19 @@
-from transformers import AutoTokenizer, AutoConfig
-from recommendation.nrms import PLMBasedNewsEncoder, NRMS, UserEncoder
+import torch
+from const.path import MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR
+from evaluation.RecEvaluator import RecEvaluator, RecMetrics
 from mind.dataframe import read_behavior_df, read_news_df
 from mind.MINDDataset import MINDValDataset
-from const.path import MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR
-from utils.random_seed import set_random_seed
-from utils.text import create_transform_fn_from_pretrained_tokenizer
-import torch
+from recommendation.nrms import NRMS, PLMBasedNewsEncoder, UserEncoder
 from torch import nn
-from utils.logger import logging
-from evaluation.RecEvaluator import RecEvaluator, RecMetrics
 from torch.utils.data import DataLoader
-from transformers.modeling_outputs import ModelOutput
 from tqdm import tqdm
+from transformers import AutoConfig, AutoTokenizer
+from transformers.modeling_outputs import ModelOutput
+from utils.logger import logging
+from utils.random_seed import set_random_seed
 from utils.slack import notify_slack
+from utils.text import create_transform_fn_from_pretrained_tokenizer
+
 
 set_random_seed()
 

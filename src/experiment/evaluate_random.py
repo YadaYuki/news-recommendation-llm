@@ -1,15 +1,15 @@
-from transformers import AutoTokenizer
+import numpy as np
+import torch
+from const.path import MIND_SMALL_VAL_DATASET_DIR
+from evaluation.RecEvaluator import RecEvaluator, RecMetrics
 from mind.dataframe import read_behavior_df, read_news_df
 from mind.MINDDataset import MINDValDataset
-from const.path import MIND_SMALL_VAL_DATASET_DIR
-from utils.random_seed import set_random_seed
-from utils.text import create_transform_fn_from_pretrained_tokenizer
-import torch
-from utils.logger import logging
-from evaluation.RecEvaluator import RecEvaluator, RecMetrics
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import numpy as np
+from transformers import AutoTokenizer
+from utils.logger import logging
+from utils.random_seed import set_random_seed
+from utils.text import create_transform_fn_from_pretrained_tokenizer
 
 
 set_random_seed()

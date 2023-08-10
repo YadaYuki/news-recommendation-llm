@@ -1,9 +1,11 @@
-from torch.utils.data import Dataset
-import torch
-from typing import Callable
-import polars as pl
-import numpy as np
 import random
+from typing import Callable
+
+import numpy as np
+import polars as pl
+import torch
+from torch.utils.data import Dataset
+
 
 EMPTY_NEWS_ID, EMPTY_IMPRESSION_IDX = "EMPTY_NEWS_ID", -1
 
@@ -180,12 +182,13 @@ class MINDValDataset(Dataset):
 
 
 if __name__ == "__main__":
-    from src.mind.dataframe import read_behavior_df, read_news_df
     from const.path import MIND_SMALL_VAL_DATASET_DIR
-    from transformers import AutoTokenizer
     from torch.utils.data import DataLoader
+    from transformers import AutoTokenizer
     from utils.logger import logging
     from utils.random_seed import set_random_seed
+
+    from src.mind.dataframe import read_behavior_df, read_news_df
 
     set_random_seed(42)
 

@@ -1,6 +1,7 @@
-from src.evaluation.RecEvaluator import RecEvaluator
 import numpy as np
 import pytest
+
+from src.evaluation.RecEvaluator import RecEvaluator
 
 
 def test_dcg_score() -> None:

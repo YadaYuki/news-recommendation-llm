@@ -1,6 +1,7 @@
-from torch import nn
 import torch
-from transformers import AutoModel, AutoConfig
+from torch import nn
+from transformers import AutoConfig, AutoModel
+
 from .AdditiveAttention import AdditiveAttention
 
 

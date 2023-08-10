@@ -1,6 +1,7 @@
-from torch import nn
-from .AdditiveAttention import AdditiveAttention
 import torch
+from torch import nn
+
+from .AdditiveAttention import AdditiveAttention
 
 
 class UserEncoder(nn.Module):
