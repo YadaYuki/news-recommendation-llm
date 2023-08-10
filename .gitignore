@@ -16,3 +16,5 @@ dataset/*
 .cache
 
 *_cache
+
+output/*
