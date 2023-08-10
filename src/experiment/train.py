@@ -39,6 +39,7 @@ def train(
     loss_fn: nn.Module = nn.CrossEntropyLoss()
     transform_fn = create_transform_fn_from_pretrained_tokenizer(AutoTokenizer.from_pretrained(pretrained), max_len)
     model_save_dir = generate_folder_name_with_timestamp(MODEL_OUTPUT_DIR)
+    model_save_dir.mkdir(parents=True, exist_ok=True)
 
     """
     1. Init Model
