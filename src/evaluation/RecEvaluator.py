@@ -21,16 +21,10 @@ class RecEvaluator:
             **{
                 "ndcg_at_10": cls.ndcg_score(y_true, y_score, 10),
                 "ndcg_at_5": cls.ndcg_score(y_true, y_score, 5),
-                "auc": cls.roc_auc_score(y_true, y_score),
+                "auc": roc_auc_score(y_true, y_score),
                 "mrr": cls.mrr_score(y_true, y_score),
             }
         )
-
-    @classmethod
-    def roc_auc_score(cls, y_true: np.ndarray, y_score: np.ndarray) -> float:
-        y_score_rank = np.argsort(y_score)[::-1] + 1
-        y_score = np.ones(len(y_score)) / y_score_rank
-        return roc_auc_score(y_true, y_score)
 
     @classmethod
     def dcg_score(cls, y_true: np.ndarray, y_score: np.ndarray, K: int = 5) -> float:
