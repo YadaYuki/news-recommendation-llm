@@ -15,6 +15,7 @@ from tqdm import tqdm
 import hydra
 from utils.slack import notify_slack
 from config.config import TrainConfig
+from utils.path import generate_folder_name_with_timestamp
 
 
 def train(
@@ -33,10 +34,11 @@ def train(
     """
     0. Definite Parameters & Functions
     """
+    EVAL_BATCH_SIZE = 1
     hidden_size: int = AutoConfig.from_pretrained(pretrained).hidden_size
     loss_fn: nn.Module = nn.CrossEntropyLoss()
     transform_fn = create_transform_fn_from_pretrained_tokenizer(AutoTokenizer.from_pretrained(pretrained), max_len)
-    EVAL_BATCH_SIZE = 1
+    model_save_dir = generate_folder_name_with_timestamp(MODEL_OUTPUT_DIR)
 
     """
     1. Init Model
@@ -52,11 +54,13 @@ def train(
     2. Load Data & Create Dataset
     """
     logging.info("Initilize Dataset")
+
     train_news_df = read_news_df(MIND_SMALL_TRAIN_DATASET_DIR / "news.tsv")
     train_behavior_df = read_behavior_df(MIND_SMALL_TRAIN_DATASET_DIR / "behaviors.tsv")
+    train_dataset = MINDTrainDataset(train_behavior_df, train_news_df, transform_fn, npratio, history_size, device)
+
     val_news_df = read_news_df(MIND_SMALL_VAL_DATASET_DIR / "news.tsv")
     val_behavior_df = read_behavior_df(MIND_SMALL_VAL_DATASET_DIR / "behaviors.tsv")
-    train_dataset = MINDTrainDataset(train_behavior_df, train_news_df, transform_fn, npratio, history_size, device)
     eval_dataset = MINDValDataset(val_behavior_df, val_news_df, transform_fn, history_size)
 
     """
@@ -64,7 +68,7 @@ def train(
     """
     logging.info("Training Start")
     training_args = TrainingArguments(
-        output_dir=MODEL_OUTPUT_DIR,
+        output_dir=model_save_dir,
         logging_strategy="steps",
         save_total_limit=5,
         lr_scheduler_type="constant",
@@ -95,7 +99,7 @@ def train(
     4. Evaluate
     """
     trainer.model.eval()
-    eval_dataloader = DataLoader(eval_dataset, batch_size=1, pin_memory=True)
+    eval_dataloader = DataLoader(eval_dataset, batch_size=EVAL_BATCH_SIZE, pin_memory=True)
     metrics_average = RecMetrics(
         **{
             "ndcg_at_10": 0.0,
