@@ -25,6 +25,9 @@ line-length = 119
 [tool.ruff]
 line-length = 119
 
+[tool.ruff.isort]
+lines-after-imports = 2
+
 [tool.mypy]
 python_version = 3.11
 disallow_untyped_defs=true

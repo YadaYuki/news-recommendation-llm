@@ -6,4 +6,3 @@ def generate_folder_name_with_timestamp(path_prefix: Path, timestamp: datetime =
     date = Path(timestamp.strftime("%Y-%m-%d"))
     time = Path(timestamp.strftime("%H-%M-%S"))
     return path_prefix / date / time
-

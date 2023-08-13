@@ -1,7 +1,8 @@
-from src.recommendation.nrms.PLMBasedNewsEncoder import PLMBasedNewsEncoder
-from src.recommendation.nrms.UserEncoder import UserEncoder
 import torch
 from transformers import AutoConfig
+
+from src.recommendation.nrms.PLMBasedNewsEncoder import PLMBasedNewsEncoder
+from src.recommendation.nrms.UserEncoder import UserEncoder
 
 
 def test_news_encoder() -> None:

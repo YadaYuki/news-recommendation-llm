@@ -1,9 +1,11 @@
-from const.path import DATASET_DIR
-import requests
-from tqdm import tqdm
-from pydantic import BaseModel
-from zipfile import ZipFile
 from concurrent.futures import ThreadPoolExecutor, wait
+from zipfile import ZipFile
+
+import requests
+from const.path import DATASET_DIR
+from pydantic import BaseModel
+from tqdm import tqdm
+
 
 MIND_DATASET_BASE_URL = "https://mind201910small.blob.core.windows.net/release"
 MIND_DATASET_DIR = DATASET_DIR / "mind"
