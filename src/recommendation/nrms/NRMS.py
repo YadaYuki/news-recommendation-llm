@@ -30,7 +30,6 @@ class NRMS(nn.Module):
         Returns
         ----------
         output: torch.Tensor (shape = (batch_size, candidate_num))
-
         """
 
         batch_size, candidate_num, seq_len = candidate_news.size()

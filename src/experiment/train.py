@@ -1,4 +1,5 @@
 import hydra
+import numpy as np
 import torch
 from config.config import TrainConfig
 from const.path import LOG_OUTPUT_DIR, MIND_SMALL_TRAIN_DATASET_DIR, MIND_SMALL_VAL_DATASET_DIR, MODEL_OUTPUT_DIR
@@ -16,6 +17,39 @@ from utils.path import generate_folder_name_with_timestamp
 from utils.random_seed import set_random_seed
 from utils.slack import notify_slack
 from utils.text import create_transform_fn_from_pretrained_tokenizer
+
+
+def evaluate(net: torch.nn.Module, eval_mind_dataset: MINDValDataset, device: torch.device) -> RecMetrics:
+    net.eval()
+    EVAL_BATCH_SIZE = 1
+    eval_dataloader = DataLoader(eval_mind_dataset, batch_size=EVAL_BATCH_SIZE, pin_memory=True)
+
+    val_metrics_list: list[RecMetrics] = []
+    for batch in tqdm(eval_dataloader, desc="Evaluation for MINDValDataset"):
+        # Inference
+        batch["news_histories"] = batch["news_histories"].to(device)
+        batch["candidate_news"] = batch["candidate_news"].to(device)
+        batch["target"] = batch["target"].to(device)
+        with torch.no_grad():
+            model_output: ModelOutput = net(**batch)
+
+        # Convert To Numpy
+        y_score: torch.Tensor = model_output.logits.flatten().cpu().to(torch.float64).numpy()
+        y_true: torch.Tensor = batch["target"].flatten().cpu().to(torch.int).numpy()
+
+        # Calculate Metrics
+        val_metrics_list.append(RecEvaluator.evaluate_all(y_true, y_score))
+
+    rec_metrics = RecMetrics(
+        **{
+            "ndcg_at_10": np.average([metrics_item.ndcg_at_10 for metrics_item in val_metrics_list]),
+            "ndcg_at_5": np.average([metrics_item.ndcg_at_5 for metrics_item in val_metrics_list]),
+            "auc": np.average([metrics_item.auc for metrics_item in val_metrics_list]),
+            "mrr": np.average([metrics_item.mrr for metrics_item in val_metrics_list]),
+        }
+    )
+
+    return rec_metrics
 
 
 def train(
@@ -99,39 +133,8 @@ def train(
     """
     4. Evaluate
     """
-    trainer.model.eval()
-    eval_dataloader = DataLoader(eval_dataset, batch_size=EVAL_BATCH_SIZE, pin_memory=True)
-    metrics_average = RecMetrics(
-        **{
-            "ndcg_at_10": 0.0,
-            "ndcg_at_5": 0.0,
-            "auc": 0.0,
-            "mrr": 0.0,
-        }
-    )
-    for batch in tqdm(eval_dataloader, desc="Evaluation for MINDValDataset"):
-        batch["news_histories"] = batch["news_histories"].to(device)
-        batch["candidate_news"] = batch["candidate_news"].to(device)
-        batch["target"] = batch["target"].to(device)
-
-        with torch.no_grad():
-            model_output: ModelOutput = trainer.model(**batch)
-
-        y_score: torch.Tensor = model_output.logits.flatten().cpu().to(torch.float64).numpy()
-        y_true: torch.Tensor = batch["target"].flatten().cpu().to(torch.int).numpy()
-
-        metrics = RecEvaluator.evaluate_all(y_true, y_score)
-        metrics_average.ndcg_at_10 += metrics.ndcg_at_10
-        metrics_average.ndcg_at_5 += metrics.ndcg_at_5
-        metrics_average.auc += metrics.auc
-        metrics_average.mrr += metrics.mrr
-
-    metrics_average.ndcg_at_10 /= len(eval_dataset)
-    metrics_average.ndcg_at_5 /= len(eval_dataset)
-    metrics_average.auc /= len(eval_dataset)
-    metrics_average.mrr /= len(eval_dataset)
-
-    logging.info(metrics_average.dict())
+    metrics = evaluate(trainer.model, eval_dataset, device)
+    logging.info(metrics.dict())
 
     notify_slack(
         f"""```
@@ -145,8 +148,8 @@ def train(
         weight_decay:{weight_decay}
         max_len:{max_len}
         device:{device}
-        {metrics_average.dict()}
-    ```"""
+        {metrics.dict()}
+        ```"""
     )
 
 
