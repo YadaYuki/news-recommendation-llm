@@ -8,8 +8,8 @@
 ## Overview
 
 - Implementation of Pretrained Large Language Model Based News Recommendation using Python / PyTorch.
-- We adopted **Neural News Recommendation with Multi-Head Self-Attention(NRMS)**[], known for its high performance among neural news recommendation methods, as our model.
-- We are using language models such as **BERT**[] as the backbone to obtain embedding vectors for news content.
+- We adopted **Neural News Recommendation with Multi-Head Self-Attention(NRMS)**, known for its high performance among neural news recommendation methods, as our model.
+- We are using language models such as **BERT and **DistilBERT\*\* as the backbone to obtain embedding vectors for news content.
 
 ## Project Structure
 
@@ -70,13 +70,14 @@ $ export PYTHONPATH=$(pwd)/src:$PYTHONPATH
 
 ### Download Microsoft News Dataset (MIND)
 
-We use **[MIND (Microsoft News Dataset)](https://msnews.github.io/)** [3] dataset for training and validating the news recommendation model. You can download them by executing [dataset/download_mind.py](https://github.com/YadaYuki/news-recommendation-llm/blob/main/dataset/download_mind.py).
+We use **[MIND (Microsoft News Dataset)](https://msnews.github.io/)** dataset for training and validating the news recommendation model. You can download them by executing [dataset/download_mind.py](https://github.com/YadaYuki/news-recommendation-llm/blob/main/dataset/download_mind.py).
 
 ```
 $ rye run python ./dataset/download_mind.py
 ```
 
 By executing [dataset/download_mind.py](https://github.com/YadaYuki/news-recommendation-llm/blob/main/dataset/download_mind.py), the MIND dataset will be downloaded from an external site and then extracted.
+
 If you successfully executed, `dataset` folder will be structured as follows:
 
 ```
@@ -100,16 +101,68 @@ If you successfully executed, `dataset` folder will be structured as follows:
 
 ## Experiment
 
-### Fine-tune a news recommendation model
+### Fine Tune a model
+
+If you execute `src/experiments/train.py`, the news recommendation model will be finetuned on the **MIND small dataset**.
+Hyperparameters can be specified from the arguments.
+
+```bash
+$ rye run python src/experiments/train.py -m \
+    random_seed = 42 \
+    pretrained = "distilbert-base-uncased" \
+    npratio = 4 \
+    history_size = 50 \
+    batch_size = 16 \
+    gradient_accumulation_steps = 8 \
+    epochs = 3 \
+    learning_rate = 1e-4 \
+    weight_decay = 0.0 \
+    max_len = 30 \
+```
+
+You can see the default values for each hyperparameter in [src/config/config.py](https://github.com/YadaYuki/news-recommendation-llm/blob/feat/add-readme/src/config/config.py#L1-L23). If you simply execute `rye run python train.py`, fine-tuning will start based on the default values.
+
+### Model Performance
+
+We ran the fine-tuning code on Single GPU (V100 x 1). Then, evaluated on validation set of MIND Small Dataset. Additionally, as a point of comparison, we implemented **random** recommendations ([`src/experiments/evaluate_random.py`](https://github.com/YadaYuki/news-recommendation-llm/blob/feat/add-readme/src/experiment/evaluate_random.py) ) and evaluated.
+
+#### Experimental Result
+
+|         Model          |  AUC  |  MRR  | nDCG@5 | nDCG@10 | Time to Train |
+| :--------------------: | :---: | :---: | :----: | :-----: | :-----------: |
+| Random Recommendation  | 0.500 | 0.201 | 0.203  |  0.267  |       -       |
+| NRMS + DistilBERT-base | 0.674 | 0.297 | 0.322  |  0.387  |    15.0 h     |
+|    NRMS + BERT-base    | 0.689 | 0.306 | 0.336  |  0.400  |    28.5 h     |
 
 ### Trained Model
 
-### Model Performance
+To make it easy to try inference and evaluation, we have publicly released the trained model.
+Here are the links.
+
+|         Model          |                                                Link                                                |
+| :--------------------: | :------------------------------------------------------------------------------------------------: |
+| NRMS + DistilBERT-base |      [Google Drive](https://drive.google.com/drive/folders/1_mdjSm6IDVhGbuUQlSSbkhRLbNrKNGwj)      |
+|    NRMS + BERT-base    | [Google Drive](https://drive.google.com/file/d/1ARiUgSVwcDFopFoIusp2MGQzwTMncOFf/view?usp=sharing) |
+
+You can try it with the following script.
+
+```python
+pretrained = "distilbert-base-uncased"
+news_encoder = PLMBasedNewsEncoder(pretrained)
+user_encoder = UserEncoder(hidden_size=hidden_size)
+nrms_net = NRMS(news_encoder=news_encoder, user_encoder=user_encoder, hidden_size=hidden_size, loss_fn=loss_fn).to(
+    device, dtype=torch.bfloat16
+)
+path_to_model = {path to trained model}
+nrms_net.load_state_dict(torch.load(path_to_model))
+```
 
 ## Reference
 
 [1] NRMS
+
 [2] BERT
+
 [3] MIND
 
 ## License
