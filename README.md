@@ -141,7 +141,7 @@ Here are the links.
 
 |         Model          |                                                Link                                                |
 | :--------------------: | :------------------------------------------------------------------------------------------------: |
-| NRMS + DistilBERT-base |      [Google Drive](https://drive.google.com/drive/folders/1_mdjSm6IDVhGbuUQlSSbkhRLbNrKNGwj)      |
+| NRMS + DistilBERT-base | [Google Drive](https://drive.google.com/file/d/1cw9WQSOVYJdYJCuIrSmU8odV2nsmith5/view?usp=sharing) |
 |    NRMS + BERT-base    | [Google Drive](https://drive.google.com/file/d/1ARiUgSVwcDFopFoIusp2MGQzwTMncOFf/view?usp=sharing) |
 
 You can try it with the following script.
