@@ -15,7 +15,6 @@ from transformers.modeling_outputs import ModelOutput
 from utils.logger import logging
 from utils.path import generate_folder_name_with_timestamp
 from utils.random_seed import set_random_seed
-from utils.slack import notify_slack
 from utils.text import create_transform_fn_from_pretrained_tokenizer
 
 
@@ -133,24 +132,9 @@ def train(
     """
     4. Evaluate
     """
+    logging.info("Evaluation")
     metrics = evaluate(trainer.model, eval_dataset, device)
     logging.info(metrics.dict())
-
-    notify_slack(
-        f"""```
-        pretrained:{pretrained}
-        npratio:{npratio}
-        history_size:{history_size}
-        batch_size:{batch_size}
-        gradient_accumulation_steps:{gradient_accumulation_steps}
-        epochs:{epochs}
-        learning_rate:{learning_rate}
-        weight_decay:{weight_decay}
-        max_len:{max_len}
-        device:{device}
-        {metrics.dict()}
-        ```"""
-    )
 
 
 @hydra.main(version_base=None, config_name="train_config")
@@ -169,7 +153,7 @@ def main(cfg: TrainConfig) -> None:
             cfg.max_len,
         )
     except Exception as e:
-        notify_slack(f"```{e}```")
+        logging.error(e)
 
 
 if __name__ == "__main__":
