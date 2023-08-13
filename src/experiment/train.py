@@ -77,7 +77,7 @@ def train(
     """
     1. Init Model
     """
-    logging.info("Initilize Model")
+    logging.info("Initialize Model")
     news_encoder = PLMBasedNewsEncoder(pretrained)
     user_encoder = UserEncoder(hidden_size=hidden_size)
     nrms_net = NRMS(news_encoder=news_encoder, user_encoder=user_encoder, hidden_size=hidden_size, loss_fn=loss_fn).to(
@@ -87,7 +87,7 @@ def train(
     """
     2. Load Data & Create Dataset
     """
-    logging.info("Initilize Dataset")
+    logging.info("Initialize Dataset")
 
     train_news_df = read_news_df(MIND_SMALL_TRAIN_DATASET_DIR / "news.tsv")
     train_behavior_df = read_behavior_df(MIND_SMALL_TRAIN_DATASET_DIR / "behaviors.tsv")
@@ -130,7 +130,7 @@ def train(
     trainer.train()
 
     """
-    4. Evaluate
+    4. Evaluate model by Validation Dataset
     """
     logging.info("Evaluation")
     metrics = evaluate(trainer.model, eval_dataset, device)
