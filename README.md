@@ -3,7 +3,7 @@
 </div>
 
 <h1 align="center">News Recommendation 🌎 </h1>
-<p align="center"><strong>Pretrained Large Language Model Based News Recommendation using Python / PyTorch. </strong></p>
+<p align="center"><strong>Pretrained Large Language Model Based News Recommendation using Python / PyTorch 🚀 </strong></p>
 
 ## Overview
 
