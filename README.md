@@ -9,7 +9,7 @@
 
 - Implementation of Pretrained Large Language Model Based News Recommendation using Python / PyTorch.
 - We adopted **Neural News Recommendation with Multi-Head Self-Attention(NRMS)**, known for its high performance among neural news recommendation methods, as our model.
-- We are using language models such as **BERT and **DistilBERT\*\* as the backbone to obtain embedding vectors for news content.
+- We are using language models such as **BERT** and **DistilBERT** as the backbone to obtain embedding vectors for news content.
 
 ## Project Structure
 
@@ -159,10 +159,24 @@ nrms_net.load_state_dict(torch.load(path_to_model))
 
 ## Reference
 
-[1] NRMS
+[1] **BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding**
+Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K.
+https://aclanthology.org/N19-1423
 
-[2] BERT
+[2] **DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter**
+Sanh, V., Debut, L., Chaumond, J., & Wolf, T.
+https://arxiv.org/abs/1910.01108
 
-[3] MIND
+[3] **Neural News Recommendation with Multi-Head Self-Attention**
+Wu, C., Wu, F., Ge, S., Qi, T., Huang, Y., & Xie, X.
+https://aclanthology.org/D19-1671
+
+[4] **Empowering News Recommendation with Pre-Trained Language Models**
+Wu, C., Wu, F., Qi, T., & Huang, Y.
+https://doi.org/10.1145/3404835.3463069
+
+[5] **MIND: A Large-scale Dataset for News Recommendation**
+Wu, F., Qiao, Y., Chen, J.-H., Wu, C., Qi, T., Lian, J., Liu, D., Xie, X., Gao, J., Wu, W., & Zhou, M.
+https://aclanthology.org/2020.acl-main.331
 
 ## License
