@@ -10,7 +10,7 @@ class TrainConfig:
     npratio: int = 4
     history_size: int = 50
     batch_size: int = 16
-    gradient_accumulation_steps: int = 8  # 16 x 8 = 128
+    gradient_accumulation_steps: int = 8  # batch_size = 16 x 8 = 128
     epochs: int = 3
     learning_rate: float = 1e-4
     weight_decay: float = 0.0
