@@ -181,4 +181,4 @@ https://aclanthology.org/2020.acl-main.331
 
 ## License
 
-MIT
+[MIT](https://github.com/YadaYuki/news-recommendation-llm/blob/main/LICENSE)
