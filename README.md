@@ -7,6 +7,12 @@
 
 ## Overview
 
+- Implementation of Pretrained Large Language Model Based News Recommendation using Python / PyTorch.
+- We adopted **Neural News Recommendation with Multi-Head Self-Attention(NRMS)[]**, known for its high performance among neural news recommendation methods, as our model.
+- We are using language models such as **BERT** as the backbone to obtain embedding vectors for news content.
+
+<!-- SoTAというのが正しいのか...？ -->
+
 ## Project Structure
 
 ## Preparation
