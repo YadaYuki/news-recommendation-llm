@@ -2,8 +2,8 @@
     <img height=200 src="./.github/images/news-logo.png" alt="News Contents on Smartphone">
 </div>
 
-<h1 align="center">News Recommendation 🌎 </h1>
-<p align="center"><strong>Pretrained Large Language Model Based News Recommendation using Python / PyTorch 🚀 </strong></p>
+<h1 align="center">News Recommendation using LLM 🌎 </h1>
+<p align="center"><strong>Pre-trained Large Language Model Based News Recommendation using Python / PyTorch 🚀 </strong></p>
 
 ## Overview
 
