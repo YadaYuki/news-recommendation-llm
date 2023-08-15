@@ -150,13 +150,14 @@ You can try it with the following script.
 import torch
 from recommendation.nrms import NRMS, PLMBasedNewsEncoder, UserEncoder
 
+loss_fn: torch.nn.Module = torch.nn.CrossEntropyLoss()
 pretrained = "distilbert-base-uncased"
 news_encoder = PLMBasedNewsEncoder(pretrained)
 user_encoder = UserEncoder(hidden_size=hidden_size)
 nrms_net = NRMS(news_encoder=news_encoder, user_encoder=user_encoder, hidden_size=hidden_size, loss_fn=loss_fn).to(
     device, dtype=torch.bfloat16
 )
-path_to_model = {path to trained model}
+path_to_model = {path to trained NRMS-DistilBERT Model}
 nrms_net.load_state_dict(torch.load(path_to_model))
 ```
 
