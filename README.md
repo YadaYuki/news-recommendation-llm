@@ -147,6 +147,9 @@ Here are the links.
 You can try it with the following script.
 
 ```python
+import torch
+from recommendation.nrms import NRMS, PLMBasedNewsEncoder, UserEncoder
+
 pretrained = "distilbert-base-uncased"
 news_encoder = PLMBasedNewsEncoder(pretrained)
 user_encoder = UserEncoder(hidden_size=hidden_size)
