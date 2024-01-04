@@ -161,6 +161,20 @@ path_to_model = {path to trained NRMS-DistilBERT Model}
 nrms_net.load_state_dict(torch.load(path_to_model))
 ```
 
+## Citation
+
+```
+@misc{
+  yuki-yada-news-recommendation-llm,
+  author = {Yuki Yada},
+  title = {News Recommendation using LLM},
+  year = {2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/YadaYuki/news-recommendation-llm}}
+}
+```
+
 ## Reference
 
 [1] **BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding**
