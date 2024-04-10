@@ -197,6 +197,23 @@ https://doi.org/10.1145/3404835.3463069
 Wu, F., Qiao, Y., Chen, J.-H., Wu, C., Qi, T., Lian, J., Liu, D., Xie, X., Gao, J., Wu, W., & Zhou, M.
 https://aclanthology.org/2020.acl-main.331
 
-## License
+## Using This Software in Your Work
 
-[MIT](https://github.com/YadaYuki/news-recommendation-llm/blob/main/LICENSE)
+We warmly welcome the use of this software in academic, research, or educational settings. If you decide to use our software in your paper or project, we would appreciate it if you could inform us. This helps us understand the impact and reach of our software and can guide future development and improvements.
+
+Please contact us at: yada.yuki@fuji.waseda.jp
+
+### Citation
+
+If you refer to or use our software in your research, please cite it as follows:
+```
+@misc{yuki-yada-news-rec,
+  author = {Yuki Yada},
+  title = {News Recommendation using PLMs},
+  year = {2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/YadaYuki/news-recommendation-llm}}
+}
+
+```
